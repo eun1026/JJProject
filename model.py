@@ -1,14 +1,43 @@
-from flask_sqlalchemy import SQLAlchemy
+import mysql.connector
+from datetime import datetime
 
-db = SQLAlchemy()
+class DBManager:
+    def __init__(self):
+        self.connection = None
+        self.cursor = None
+        self.connect()
 
-class Goal(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    amount = db.Column(db.Float, nullable=False)
-    deadline = db.Column(db.Date, nullable=False)
-    frequency = db.Column(db.String(20), nullable=False)
-    savings = db.Column(db.Float, default=0.0)
+    def connect(self):
+        self.connection = mysql.connector.connect(
+            host="localhost",
+            user="root",  # 본인 MySQL 계정
+            password="password",  # 본인 MySQL 비밀번호
+            database="savings_goal"
+        )
+        self.cursor = self.connection.cursor()
 
-    def __repr__(self):
-        return f'<Goal {self.name}>'
+    def create_user(self, username, password):
+        query = "INSERT INTO users (username, password) VALUES (%s, %s)"
+        self.cursor.execute(query, (username, password))
+        self.connection.commit()
+
+    def get_user_by_username(self, username):
+        query = "SELECT * FROM users WHERE username = %s"
+        self.cursor.execute(query, (username,))
+        return self.cursor.fetchone()
+
+    def get_user_by_credentials(self, username, password):
+        query = "SELECT * FROM users WHERE username = %s AND password = %s"
+        self.cursor.execute(query, (username, password))
+        return self.cursor.fetchone()
+
+    def create_goal(self, user_id, name, amount, deadline, cycle):
+        query = """INSERT INTO goals (user_id, name, amount, deadline, savings_cycle)
+                   VALUES (%s, %s, %s, %s, %s)"""
+        self.cursor.execute(query, (user_id, name, amount, deadline, cycle))
+        self.connection.commit()
+
+    def get_goals_by_user_id(self, user_id):
+        query = "SELECT * FROM goals WHERE user_id = %s"
+        self.cursor.execute(query, (user_id,))
+        return self.cursor.fetchall()
