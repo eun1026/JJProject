@@ -11,8 +11,8 @@ class DBManager:
         self.connection = mysql.connector.connect(
             host="localhost",
             user="root",  # 본인 MySQL 계정
-            password="password",  # 본인 MySQL 비밀번호
-            database="savings_goal"
+            password="1234",  # 본인 MySQL 비밀번호
+            database="board_db2"
         )
         self.cursor = self.connection.cursor()
 
