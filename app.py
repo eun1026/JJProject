@@ -1,82 +1,108 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from model import DBManager
+from datetime import datetime
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # 세션을 위한 비밀 키
+app.config['SECRET_KEY'] = 'your_secret_key'  # 세션 보안 키
 
-# 데이터베이스 연결 객체 생성
+# MySQL 접속 객체 초기화
 db_manager = DBManager()
 
-# 홈 화면 (첫 화면)
 @app.route('/')
-def home():
-    return render_template('home.html')
+def index():
+    return render_template('index.html')
 
-# 회원가입 화면
-@app.route('/signup', methods=['GET', 'POST'])
-def signup():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        
-        # 중복된 사용자 확인
-        if db_manager.get_user_by_username(username):
-            flash('이미 존재하는 사용자입니다.')
-            return redirect(url_for('signup'))
-        
-        # 새 사용자 저장
-        db_manager.create_user(username, password)
-        flash('회원가입 성공!')
-        return redirect(url_for('login'))
-    
-    return render_template('signup.html')
-
-# 로그인 화면
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
         
-        # 사용자 로그인 확인
-        user = db_manager.get_user_by_credentials(username, password)
+        # 로그인 체크
+        user = db_manager.login_user(username, password)
         if user:
-            session['user_id'] = user[0]  # 사용자 ID는 첫 번째 컬럼에 있음
-            flash('로그인 성공!')
-            return redirect(url_for('goal_list'))
+            session['user_id'] = user['id']
+            return redirect(url_for('dashboard'))
         else:
-            flash('아이디 또는 비밀번호가 틀렸습니다.')
+            flash('Invalid username or password', 'danger')
     
     return render_template('login.html')
 
-# 저축 목표 설정 화면
-@app.route('/goal', methods=['GET', 'POST'])
-def goal():
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        
+        # 회원가입
+        db_manager.register_user(username, password)
+        flash('Registration successful! You can now login.', 'success')
+        return redirect(url_for('login'))
+    
+    return render_template('register.html')
+
+@app.route('/dashboard')
+def dashboard():
     if 'user_id' not in session:
-        return redirect(url_for('login'))  # 로그인하지 않은 경우 로그인 화면으로 이동
+        return redirect(url_for('login'))
+    
+    transactions = db_manager.get_transactions(session['user_id'])
+    return render_template('dashboard.html', transactions=transactions)
+
+@app.route('/add_transaction', methods=['GET', 'POST'])
+def add_transaction():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
     
     if request.method == 'POST':
-        name = request.form['goal_name']
-        amount = request.form['goal_amount']
-        deadline = request.form['goal_deadline']
-        cycle = request.form['goal_savings_cycle']
+        description = request.form['description']
+        amount = request.form['amount']
+        user_id = session['user_id']
         
-        # 목표 저장
-        db_manager.create_goal(session['user_id'], name, amount, deadline, cycle)
-        flash('저축 목표가 저장되었습니다.')
-        return redirect(url_for('goal_list'))
+        db_manager.add_transaction(description, amount, user_id)
+        flash('Transaction added successfully!', 'success')
+        return redirect(url_for('dashboard'))
     
-    return render_template('goal.html')
+    return render_template('add_transaction.html')
 
-# 저축 목표 목록 화면
-@app.route('/goal_list')
-def goal_list():
+@app.route('/edit_transaction/<int:transaction_id>', methods=['GET', 'POST'])
+def edit_transaction(transaction_id):
     if 'user_id' not in session:
-        return redirect(url_for('login'))  # 로그인하지 않은 경우 로그인 화면으로 이동
+        return redirect(url_for('login'))
     
-    goals = db_manager.get_goals_by_user_id(session['user_id'])
-    return render_template('goal_list.html', goals=goals)
+    transaction = db_manager.get_transaction(transaction_id)
+    
+    if request.method == 'POST':
+        description = request.form['description']
+        amount = request.form['amount']
+        
+        db_manager.update_transaction(transaction_id, description, amount)
+        flash('Transaction updated successfully!', 'success')
+        return redirect(url_for('dashboard'))
+    
+    return render_template('edit_transaction.html', transaction=transaction)
 
-# 애플리케이션 실행
+@app.route('/delete_transaction/<int:transaction_id>', methods=['POST'])
+def delete_transaction(transaction_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    db_manager.delete_transaction(transaction_id)
+    flash('Transaction deleted successfully!', 'success')
+    return redirect(url_for('dashboard'))
+
+@app.route('/statistics')
+def statistics():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    return render_template('statistics.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('user_id', None)
+    flash('You have been logged out.', 'info')
+    return redirect(url_for('index'))
+
 if __name__ == '__main__':
     app.run(debug=True)
