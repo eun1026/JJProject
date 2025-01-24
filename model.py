@@ -6,8 +6,8 @@ class DBManager:
         self.connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="password",
-            database="finance_db"
+            password="1234",
+            database="board_db2"
         )
         self.cursor = self.connection.cursor(dictionary=True)
 
