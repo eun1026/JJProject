@@ -1,0 +1,16 @@
+{% extends 'layout.html' %}
+
+{% block title %}Edit Transaction - Finance App{% endblock %}
+
+{% block content %}
+    <h1>Edit Transaction</h1>
+    <form action="{{ url_for('edit_transaction', transaction_id=transaction.id) }}" method="POST">
+        <label for="description">Description:</label>
+        <input type="text" name="description" value="{{ transaction.description }}" required>
+        
+        <label for="amount">Amount:</label>
+        <input type="number" name="amount" value="{{ transaction.amount }}" step="0.01" required>
+        
+        <button type="submit">Update Transaction</button>
+    </form>
+{% endblock %}

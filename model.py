@@ -3,41 +3,55 @@ from datetime import datetime
 
 class DBManager:
     def __init__(self):
-        self.connection = None
-        self.cursor = None
-        self.connect()
-
-    def connect(self):
         self.connection = mysql.connector.connect(
             host="localhost",
-            user="root",  # 본인 MySQL 계정
-            password="1234",  # 본인 MySQL 비밀번호
-            database="board_db2"
+            user="root",
+            password="password",
+            database="finance_db"
         )
-        self.cursor = self.connection.cursor()
+        self.cursor = self.connection.cursor(dictionary=True)
 
-    def create_user(self, username, password):
+    # 로그인 처리
+    def login_user(self, username, password):
+        query = "SELECT * FROM users WHERE username = %s AND password = %s"
+        self.cursor.execute(query, (username, password))
+        user = self.cursor.fetchone()
+        return user
+
+    # 회원가입 처리
+    def register_user(self, username, password):
         query = "INSERT INTO users (username, password) VALUES (%s, %s)"
         self.cursor.execute(query, (username, password))
         self.connection.commit()
 
-    def get_user_by_username(self, username):
-        query = "SELECT * FROM users WHERE username = %s"
-        self.cursor.execute(query, (username,))
-        return self.cursor.fetchone()
+    # 사용자 트랜잭션 목록 가져오기
+    def get_transactions(self, user_id):
+        query = "SELECT * FROM transactions WHERE user_id = %s"
+        self.cursor.execute(query, (user_id,))
+        transactions = self.cursor.fetchall()
+        return transactions
 
-    def get_user_by_credentials(self, username, password):
-        query = "SELECT * FROM users WHERE username = %s AND password = %s"
-        self.cursor.execute(query, (username, password))
-        return self.cursor.fetchone()
-
-    def create_goal(self, user_id, name, amount, deadline, cycle):
-        query = """INSERT INTO goals (user_id, name, amount, deadline, savings_cycle)
-                   VALUES (%s, %s, %s, %s, %s)"""
-        self.cursor.execute(query, (user_id, name, amount, deadline, cycle))
+    # 트랜잭션 추가
+    def add_transaction(self, description, amount, user_id):
+        query = "INSERT INTO transactions (description, amount, user_id, created_at) VALUES (%s, %s, %s, %s)"
+        created_at = datetime.now()
+        self.cursor.execute(query, (description, amount, user_id, created_at))
         self.connection.commit()
 
-    def get_goals_by_user_id(self, user_id):
-        query = "SELECT * FROM goals WHERE user_id = %s"
-        self.cursor.execute(query, (user_id,))
-        return self.cursor.fetchall()
+    # 트랜잭션 수정
+    def update_transaction(self, transaction_id, description, amount):
+        query = "UPDATE transactions SET description = %s, amount = %s WHERE id = %s"
+        self.cursor.execute(query, (description, amount, transaction_id))
+        self.connection.commit()
+
+    # 트랜잭션 삭제
+    def delete_transaction(self, transaction_id):
+        query = "DELETE FROM transactions WHERE id = %s"
+        self.cursor.execute(query, (transaction_id,))
+        self.connection.commit()
+
+    # 트랜잭션 단건 조회
+    def get_transaction(self, transaction_id):
+        query = "SELECT * FROM transactions WHERE id = %s"
+        self.cursor.execute(query, (transaction_id,))
+        return self.cursor.fetchone()

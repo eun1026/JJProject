@@ -1,16 +1,16 @@
 {% extends 'layout.html' %}
 
-{% block title %}Login - Finance App{% endblock %}
+{% block title %}Register - Finance App{% endblock %}
 
 {% block content %}
-    <h1>Login</h1>
-    <form action="{{ url_for('login') }}" method="POST">
+    <h1>Register</h1>
+    <form action="{{ url_for('register') }}" method="POST">
         <label for="username">Username:</label>
         <input type="text" name="username" required>
         
         <label for="password">Password:</label>
         <input type="password" name="password" required>
         
-        <button type="submit">Login</button>
+        <button type="submit">Register</button>
     </form>
 {% endblock %}

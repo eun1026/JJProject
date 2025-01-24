@@ -1,0 +1,16 @@
+{% extends 'layout.html' %}
+
+{% block title %}Add Transaction - Finance App{% endblock %}
+
+{% block content %}
+    <h1>Add a Transaction</h1>
+    <form action="{{ url_for('add_transaction') }}" method="POST">
+        <label for="description">Description:</label>
+        <input type="text" name="description" required>
+        
+        <label for="amount">Amount:</label>
+        <input type="number" name="amount" step="0.01" required>
+        
+        <button type="submit">Add Transaction</button>
+    </form>
+{% endblock %}
