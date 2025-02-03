@@ -3,10 +3,10 @@ from model import DBManager
 from datetime import datetime
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your_secret_key'  # 세션 보안 키
+#app.config['SECRET_KEY'] = 'your_secret_key'  # 세션 보안 키
 
 # MySQL 접속 객체 초기화
-db_manager = DBManager()
+manager = DBManager()
 
 @app.route('/')
 def index():
@@ -19,7 +19,7 @@ def login():
         password = request.form['password']
         
         # 로그인 체크
-        user = db_manager.login_user(username, password)
+        user = manager.login_user(username, password)
         if user:
             session['user_id'] = user['id']
             return redirect(url_for('dashboard'))
@@ -35,7 +35,7 @@ def register():
         password = request.form['password']
         
         # 회원가입
-        db_manager.register_user(username, password)
+        manager.register_user(username, password)
         flash('Registration successful! You can now login.', 'success')
         return redirect(url_for('login'))
     
@@ -46,7 +46,7 @@ def dashboard():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     
-    transactions = db_manager.get_transactions(session['user_id'])
+    transactions = manager.get_transactions(session['user_id'])
     return render_template('dashboard.html', transactions=transactions)
 
 @app.route('/add_transaction', methods=['GET', 'POST'])
@@ -59,7 +59,7 @@ def add_transaction():
         amount = request.form['amount']
         user_id = session['user_id']
         
-        db_manager.add_transaction(description, amount, user_id)
+        manager.add_transaction(description, amount, user_id)
         flash('Transaction added successfully!', 'success')
         return redirect(url_for('dashboard'))
     
@@ -70,13 +70,13 @@ def edit_transaction(transaction_id):
     if 'user_id' not in session:
         return redirect(url_for('login'))
     
-    transaction = db_manager.get_transaction(transaction_id)
+    transaction = manager.get_transaction(transaction_id)
     
     if request.method == 'POST':
         description = request.form['description']
         amount = request.form['amount']
         
-        db_manager.update_transaction(transaction_id, description, amount)
+        manager.update_transaction(transaction_id, description, amount)
         flash('Transaction updated successfully!', 'success')
         return redirect(url_for('dashboard'))
     
@@ -87,7 +87,7 @@ def delete_transaction(transaction_id):
     if 'user_id' not in session:
         return redirect(url_for('login'))
     
-    db_manager.delete_transaction(transaction_id)
+    manager.delete_transaction(transaction_id)
     flash('Transaction deleted successfully!', 'success')
     return redirect(url_for('dashboard'))
 
@@ -105,4 +105,4 @@ def logout():
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="0.0.0.0", debug=True)
