@@ -1,8 +1,52 @@
-{% extends 'layout.html' %}
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>카테고리 | 재정 관리 시스템</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
 
-{% block title %}Home - Finance App{% endblock %}
+<header>
+    <h1>재정 관리 시스템</h1>
+</header>
 
-{% block content %}
-    <h1>Welcome to Finance App</h1>
-    <a href="{{ url_for('login') }}">Login</a> | <a href="{{ url_for('register') }}">Register</a>
-{% endblock %}
+<!-- 메뉴 부분: 헤더 바로 아래에 위치 -->
+<nav>
+    <ul>
+        <li><a href="/">홈</a></li>
+        <li><a href="/life">생활 관리</a></li>
+        <li><a href="/event">이벤트 관리</a></li>
+        <li><a href="/goal">목표 관리</a></li>
+        <li><a href="/save">저축 관리</a></li>
+    </ul>
+</nav>
+
+<main>
+    <h2>카테고리 관리</h2>
+    <div class="category-box">
+        <div class="category-item">
+            <a href="/life">생활 관리</a>
+            <p>생활비를 관리하고 추가/수정/삭제 할 수 있습니다.</p>
+        </div>
+        <div class="category-item">
+            <a href="/event">이벤트 관리</a>
+            <p>이벤트 관련 데이터를 관리하고 추가/수정/삭제 할 수 있습니다.</p>
+        </div>
+        <div class="category-item">
+            <a href="/goal">목표 관리</a>
+            <p>목표를 관리하고 추가/수정/삭제 할 수 있습니다.</p>
+        </div>
+        <div class="category-item">
+            <a href="/save">저축 관리</a>
+            <p>저축 항목을 관리하고 추가/수정/삭제 할 수 있습니다.</p>
+        </div>
+    </div>
+</main>
+
+<footer>© 2025 재정 관리 시스템</footer>
+
+</body>
+</html>

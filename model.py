@@ -1,57 +1,61 @@
 import mysql.connector
-from datetime import datetime
 
-class DBManager:
-    def __init__(self):
-        self.connection = mysql.connector.connect(
-            host="13.125.124.41",
-            user="ubuntu",
-            password="1234",
-            database="savings_board"
-        )
-        self.cursor = self.connection.cursor(dictionary=True)
+# MySQL 연결 함수
+def get_db_connection():
+    connection = mysql.connector.connect(
+        host='13.125.124.41',  # MySQL 서버 주소
+        user='root',       # MySQL 사용자 이름
+        password='1234',  # MySQL 비밀번호
+        database='savings_db'   # 사용할 데이터베이스 이름
+    )
+    return connection
 
-    # 로그인 처리
-    def login_user(self, username, password):
-        query = "SELECT * FROM users WHERE username = %s AND password = %s"
-        self.cursor.execute(query, (username, password))
-        user = self.cursor.fetchone()
-        return user
+# 카테고리별 모든 트랜잭션을 가져오는 함수
+def get_all_transactions(category):
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+    
+    query = f"SELECT * FROM {category} ORDER BY date DESC"
+    cursor.execute(query)
+    transactions = cursor.fetchall()
 
-    # 회원가입 처리
-    def register_user(self, username, password):
-        query = "INSERT INTO users (username, password) VALUES (%s, %s)"
-        self.cursor.execute(query, (username, password))
-        self.connection.commit()
+    cursor.close()
+    connection.close()
+    
+    return transactions
 
-    # 사용자 트랜잭션 목록 가져오기
-    def get_transactions(self, user_id):
-        query = "SELECT * FROM transactions WHERE user_id = %s"
-        self.cursor.execute(query, (user_id,))
-        transactions = self.cursor.fetchall()
-        return transactions
+# 트랜잭션 추가 함수
+def add_transaction(category, description, amount, date, transaction_type):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    
+    query = f"INSERT INTO {category} (description, amount, date, transaction_type) VALUES (%s, %s, %s, %s)"
+    cursor.execute(query, (description, amount, date, transaction_type))
+    
+    connection.commit()
+    cursor.close()
+    connection.close()
 
-    # 트랜잭션 추가
-    def add_transaction(self, description, amount, user_id):
-        query = "INSERT INTO transactions (description, amount, user_id, created_at) VALUES (%s, %s, %s, %s)"
-        created_at = datetime.now()
-        self.cursor.execute(query, (description, amount, user_id, created_at))
-        self.connection.commit()
+# 트랜잭션 수정 함수
+def edit_transaction(category, transaction_id, description, amount, date, transaction_type):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    
+    query = f"UPDATE {category} SET description = %s, amount = %s, date = %s, transaction_type = %s WHERE id = %s"
+    cursor.execute(query, (description, amount, date, transaction_type, transaction_id))
+    
+    connection.commit()
+    cursor.close()
+    connection.close()
 
-    # 트랜잭션 수정
-    def update_transaction(self, transaction_id, description, amount):
-        query = "UPDATE transactions SET description = %s, amount = %s WHERE id = %s"
-        self.cursor.execute(query, (description, amount, transaction_id))
-        self.connection.commit()
-
-    # 트랜잭션 삭제
-    def delete_transaction(self, transaction_id):
-        query = "DELETE FROM transactions WHERE id = %s"
-        self.cursor.execute(query, (transaction_id,))
-        self.connection.commit()
-
-    # 트랜잭션 단건 조회
-    def get_transaction(self, transaction_id):
-        query = "SELECT * FROM transactions WHERE id = %s"
-        self.cursor.execute(query, (transaction_id,))
-        return self.cursor.fetchone()
+# 트랜잭션 삭제 함수
+def delete_transaction(category, transaction_id):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    
+    query = f"DELETE FROM {category} WHERE id = %s"
+    cursor.execute(query, (transaction_id,))
+    
+    connection.commit()
+    cursor.close()
+    connection.close()

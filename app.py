@@ -1,108 +1,89 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
-from model import DBManager
-from datetime import datetime
+from flask import Flask, render_template, request, redirect, url_for, flash
+import model
 
 app = Flask(__name__)
-#app.config['SECRET_KEY'] = 'your_secret_key'  # 세션 보안 키
+app.secret_key = 'your_secret_key'  # flash 메시지에 필요한 비밀 키 설정
 
-# MySQL 접속 객체 초기화
-manager = DBManager()
-
+# 홈 페이지
 @app.route('/')
+def home():
+    life_transactions = model.get_all_transactions('life')
+    event_transactions = model.get_all_transactions('event')
+    goal_transactions = model.get_all_transactions('goal')
+    save_transactions = model.get_all_transactions('save')
+    
+    return render_template('home.html', 
+                           life_transactions=life_transactions, 
+                           event_transactions=event_transactions,
+                           goal_transactions=goal_transactions,
+                           save_transactions=save_transactions)
+
+# 카테고리 관리 페이지
+@app.route('/index')
 def index():
     return render_template('index.html')
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        
-        # 로그인 체크
-        user = manager.login_user(username, password)
-        if user:
-            session['user_id'] = user['id']
-            return redirect(url_for('dashboard'))
-        else:
-            flash('Invalid username or password', 'danger')
-    
-    return render_template('login.html')
+# 생활 관리 페이지
+@app.route('/life')
+def life():
+    transactions = model.get_all_transactions('life')
+    return render_template('life.html', transactions=transactions)
 
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        
-        # 회원가입
-        manager.register_user(username, password)
-        flash('Registration successful! You can now login.', 'success')
-        return redirect(url_for('login'))
-    
-    return render_template('register.html')
+# 이벤트 관리 페이지
+@app.route('/event')
+def event():
+    transactions = model.get_all_transactions('event')
+    return render_template('event.html', transactions=transactions)
 
-@app.route('/dashboard')
-def dashboard():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-    
-    transactions = manager.get_transactions(session['user_id'])
-    return render_template('dashboard.html', transactions=transactions)
+# 목표 관리 페이지
+@app.route('/goal')
+def goal():
+    transactions = model.get_all_transactions('goal')
+    return render_template('goal.html', transactions=transactions)
 
-@app.route('/add_transaction', methods=['GET', 'POST'])
-def add_transaction():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-    
+# 저축 관리 페이지
+@app.route('/save')
+def save():
+    transactions = model.get_all_transactions('save')
+    return render_template('save.html', transactions=transactions)
+
+# 새로운 항목 추가 페이지
+@app.route('/add/<category>', methods=['GET', 'POST'])
+def add(category):
     if request.method == 'POST':
         description = request.form['description']
         amount = request.form['amount']
-        user_id = session['user_id']
-        
-        manager.add_transaction(description, amount, user_id)
-        flash('Transaction added successfully!', 'success')
-        return redirect(url_for('dashboard'))
-    
-    return render_template('add_transaction.html')
+        date = request.form['date']
 
-@app.route('/edit_transaction/<int:transaction_id>', methods=['GET', 'POST'])
-def edit_transaction(transaction_id):
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
+        model.add_transaction(category, description, amount, date, 'expense')  # 'expense'는 예시입니다
+        flash("새로운 항목이 성공적으로 추가되었습니다.", "success")
+        return redirect(url_for(category))  # 해당 카테고리 페이지로 리다이렉트
     
-    transaction = manager.get_transaction(transaction_id)
-    
+    return render_template('add.html', category=category)
+
+# 수정 페이지
+@app.route('/edit/<category>/<int:transaction_id>', methods=['GET', 'POST'])
+def edit(category, transaction_id):
     if request.method == 'POST':
         description = request.form['description']
         amount = request.form['amount']
-        
-        manager.update_transaction(transaction_id, description, amount)
-        flash('Transaction updated successfully!', 'success')
-        return redirect(url_for('dashboard'))
-    
-    return render_template('edit_transaction.html', transaction=transaction)
+        date = request.form['date']
 
-@app.route('/delete_transaction/<int:transaction_id>', methods=['POST'])
-def delete_transaction(transaction_id):
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-    
-    manager.delete_transaction(transaction_id)
-    flash('Transaction deleted successfully!', 'success')
-    return redirect(url_for('dashboard'))
+        model.edit_transaction(category, transaction_id, description, amount, date, 'expense')
+        flash("항목이 수정되었습니다.", "success")
+        return redirect(url_for(category))
 
-@app.route('/statistics')
-def statistics():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
+    transaction = model.get_all_transactions(category)
+    transaction = next((item for item in transaction if item['id'] == transaction_id), None)
     
-    return render_template('statistics.html')
+    return render_template('edit.html', category=category, transaction=transaction)
 
-@app.route('/logout')
-def logout():
-    session.pop('user_id', None)
-    flash('You have been logged out.', 'info')
-    return redirect(url_for('index'))
+# 삭제 기능
+@app.route('/delete/<category>/<int:transaction_id>', methods=['GET'])
+def delete(category, transaction_id):
+    model.delete_transaction(category, transaction_id)
+    flash("항목이 삭제되었습니다.", "error")
+    return redirect(url_for(category))
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", debug=True)
+    app.run(host='0.0.0.0', debug=True)

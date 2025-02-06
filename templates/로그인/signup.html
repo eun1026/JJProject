@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입</title>
+    <style>
+        /* 스타일은 이전 로그인 페이지와 동일하게 사용할 수 있습니다 */
+    </style>
+</head>
+<body>
+    <header>
+        <h1>회원가입</h1>
+    </header>
+
+    <main>
+        <form method="POST">
+            <label for="username">아이디:</label>
+            <input type="text" id="username" name="username" required>
+            
+            <label for="password">비밀번호:</label>
+            <input type="password" id="password" name="password" required>
+            
+            <button type="submit">회원가입</button>
+        </form>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <p class="error">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </main>
+
+    <footer>
+        <p>© 2025 재정 관리 시스템</p>
+    </footer>
+</body>
+</html>
