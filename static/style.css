@@ -1,100 +1,102 @@
-/* 전체 페이지 기본 스타일 */
+/* 전체 페이지 스타일 */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Arial', sans-serif;
+    background-color: #f9f8f4; /* 배경색: 아주 부드러운 아이보리 색 */
+    color: #4a4a4a;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4;
-    color: #333;
+}
+
+/* 중앙 배치되는 컨테이너 */
+.container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* 헤더 스타일 */
-header {
-    background-color: #007BFF;
-    color: white;
-    padding: 20px;
+h1, h2 {
+    color: #6a9d8a; /* 연한 초록색 */
     text-align: center;
-    font-size: 24px;
-    font-weight: bold;
+    margin-bottom: 20px;
 }
 
-header .header-buttons {
-    text-align: right;
-    margin-top: 10px;
+/* 폼 스타일 */
+form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: space-between;
+    margin-bottom: 30px;
 }
 
-header .button {
-    background-color: #28a745;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    font-size: 16px;
-    border-radius: 5px;
-    text-decoration: none;
-}
-
-header .button:hover {
-    background-color: #218838;
-}
-
-/* 네비게이션 바 스타일 */
-nav {
-    background-color: #333;
-    color: white;
-    padding: 10px 0;
-    text-align: center;
-}
-
-nav a {
-    color: white;
-    margin: 0 15px;
-    text-decoration: none;
+label {
     font-size: 18px;
+    color: #6c6c6c;
+    flex: 1 1 100%;
 }
 
-nav a:hover {
-    text-decoration: underline;
-}
-
-/* 메인 콘텐츠 스타일 */
-main {
-    padding: 20px;
-    max-width: 1200px;
-    margin: 20px auto;
-    background-color: white;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-}
-
-/* 카테고리 박스 스타일 */
-.category-item {
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    padding: 15px;
-    margin: 15px 0;
-    border-radius: 5px;
-}
-
-.category-item a {
-    color: #007BFF;
-    font-size: 20px;
-    text-decoration: none;
-}
-
-.category-item a:hover {
-    text-decoration: underline;
-}
-
-.category-item p {
+input, select {
+    padding: 12px;
     font-size: 16px;
-    color: #555;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    width: 48%; /* 폼 필드 너비를 50%로 설정하여 2개씩 나란히 배치 */
+    background-color: #e2f4e0; /* 연한 초록 배경 */
+    transition: border-color 0.3s ease;
 }
 
-/* 표 스타일 */
+input:focus, select:focus {
+    border-color: #a7c7c5; /* 초록색 포커스 효과 */
+    outline: none;
+}
+
+/* 버튼 스타일 */
+button {
+    padding: 12px 25px;
+    background-color: #78a693; /* 부드러운 초록색 버튼 */
+    color: white;
+    font-size: 18px;
+    border: none;
+    border-radius: 8px;
+    width: 100%;
+    margin-top: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #6a9d8a; /* 버튼 호버 시 더 진한 초록 */
+}
+
+/* 플래시 메시지 스타일 */
+.flash {
+    background-color: #e2f4e0;
+    color: #7a7a7a;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.flash.success {
+    background-color: #b7e8d4;
+    color: #4b8e6b;
+}
+
+.flash.danger {
+    background-color: #ffd6d6;
+    color: #d32f2f;
+}
+
+/* 테이블 스타일 */
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
+    margin-top: 30px;
 }
 
 th, td {
@@ -104,86 +106,73 @@ th, td {
 }
 
 th {
-    background-color: #f8f9fa;
-    font-size: 18px;
+    background-color: #78a693;
+    color: white;
 }
 
 td {
-    font-size: 16px;
+    background-color: #e2f4e0;
 }
 
-tr:hover {
-    background-color: #f1f1f1;
-}
-
-a {
-    color: #dc3545;
-    text-decoration: none;
+td.amount {
     font-weight: bold;
+    color: #79a66e; /* 수입 색상 */
 }
 
-a:hover {
-    text-decoration: underline;
-}
-
-/* 버튼 스타일 */
-button {
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    border-radius: 5px;
-}
-
-button:hover {
-    background-color: #0056b3;
-}
-
-/* 폼 스타일 */
-form {
-    display: grid;
-    grid-gap: 10px;
-    margin-top: 20px;
-}
-
-form label {
-    font-size: 16px;
+td.transaction_type {
     font-weight: bold;
+    color: #6a9d8a; /* 지출 색상 */
 }
 
-form input[type="text"],
-form input[type="number"],
-form input[type="date"] {
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+/* 월별 수입/지출/잔액 표시 */
+.summary {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #e7f9e7;
+    border-radius: 10px;
+    font-size: 18px;
+    flex-wrap: wrap;
 }
 
-form button[type="submit"] {
-    background-color: #28a745;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-    border-radius: 5px;
-}
-
-form button[type="submit"]:hover {
-    background-color: #218838;
-}
-
-/* 푸터 스타일 */
-footer {
-    background-color: #333;
-    color: white;
-    padding: 10px 0;
+.summary div {
     text-align: center;
-    font-size: 14px;
-    position: absolute;
-    bottom: 0;
-    width: 100%;
+    margin: 10px;
+    flex: 1;
+}
+
+.summary .income {
+    color: #6a9d8a;
+    font-weight: bold;
+}
+
+.summary .expense {
+    color: #79a66e;
+    font-weight: bold;
+}
+
+.summary .balance {
+    color: #6c6c6c;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    form {
+        flex-direction: column;
+    }
+
+    .summary {
+        flex-direction: column;
+    }
+
+    .summary div {
+        margin: 10px 0;
+    }
+
+    input, select {
+        width: 100%;
+    }
 }

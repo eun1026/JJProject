@@ -1,61 +1,26 @@
 import mysql.connector
+import datetime
 
-# MySQL 연결 함수
+# DB 연결 설정
 def get_db_connection():
-    connection = mysql.connector.connect(
-        host='13.125.124.41',  # MySQL 서버 주소
-        user='root',       # MySQL 사용자 이름
-        password='1234',  # MySQL 비밀번호
-        database='savings_db'   # 사용할 데이터베이스 이름
+    return mysql.connector.connect(
+        host="13.125.124.41",  # DB 호스트
+        user="root",       # DB 사용자명
+        password="1234",  # DB 비밀번호
+        database="savings_db"  # 사용하고 있는 DB 이름
     )
-    return connection
 
-# 카테고리별 모든 트랜잭션을 가져오는 함수
-def get_all_transactions(category):
-    connection = get_db_connection()
-    cursor = connection.cursor(dictionary=True)
-    
-    query = f"SELECT * FROM {category} ORDER BY date DESC"
-    cursor.execute(query)
+# 모든 거래 내역 가져오기
+def get_all_transactions():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)  # 딕셔너리 형식으로 반환
+    cursor.execute("SELECT * FROM transactions ORDER BY date DESC")
     transactions = cursor.fetchall()
-
-    cursor.close()
-    connection.close()
     
+    # 날짜를 문자열에서 datetime 객체로 변환
+    for transaction in transactions:
+        transaction['date'] = transaction['date']  # 여기에서 날짜를 처리 (MySQL에서 날짜 형식이면 문제없음)
+    
+    cursor.close()
+    conn.close()
     return transactions
-
-# 트랜잭션 추가 함수
-def add_transaction(category, description, amount, date, transaction_type):
-    connection = get_db_connection()
-    cursor = connection.cursor()
-    
-    query = f"INSERT INTO {category} (description, amount, date, transaction_type) VALUES (%s, %s, %s, %s)"
-    cursor.execute(query, (description, amount, date, transaction_type))
-    
-    connection.commit()
-    cursor.close()
-    connection.close()
-
-# 트랜잭션 수정 함수
-def edit_transaction(category, transaction_id, description, amount, date, transaction_type):
-    connection = get_db_connection()
-    cursor = connection.cursor()
-    
-    query = f"UPDATE {category} SET description = %s, amount = %s, date = %s, transaction_type = %s WHERE id = %s"
-    cursor.execute(query, (description, amount, date, transaction_type, transaction_id))
-    
-    connection.commit()
-    cursor.close()
-    connection.close()
-
-# 트랜잭션 삭제 함수
-def delete_transaction(category, transaction_id):
-    connection = get_db_connection()
-    cursor = connection.cursor()
-    
-    query = f"DELETE FROM {category} WHERE id = %s"
-    cursor.execute(query, (transaction_id,))
-    
-    connection.commit()
-    cursor.close()
-    connection.close()

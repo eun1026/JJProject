@@ -1,52 +1,52 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>카테고리 | 재정 관리 시스템</title>
+    <title>가계부</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+    <div class="container">
+        <h1>가계부</h1>
 
-<header>
-    <h1>재정 관리 시스템</h1>
-</header>
+        <!-- 이번 달 수입/지출 총합 -->
+        <div class="summary">
+            <h2>이번 달 총 수입: {{ monthly_income }} 원</h2>
+            <h2>이번 달 총 지출: {{ monthly_expense }} 원</h2>
+            <h2>이번 달 남은 돈: {{ remaining_balance }} 원</h2>
+        </div>
 
-<!-- 메뉴 부분: 헤더 바로 아래에 위치 -->
-<nav>
-    <ul>
-        <li><a href="/">홈</a></li>
-        <li><a href="/life">생활 관리</a></li>
-        <li><a href="/event">이벤트 관리</a></li>
-        <li><a href="/goal">목표 관리</a></li>
-        <li><a href="/save">저축 관리</a></li>
-    </ul>
-</nav>
+        <!-- 거래 내역 테이블 -->
+        <table>
+            <thead>
+                <tr>
+                    <th>날짜</th>
+                    <th>카테고리</th>
+                    <th>내용</th>
+                    <th>금액</th>
+                    <th>수입/지출</th>
+                    <th>수정/삭제</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transaction in transactions %}
+                <tr>
+                    <td>{{ transaction.date }}</td>
+                    <td>{{ transaction.category }}</td>
+                    <td>{{ transaction.description }}</td>
+                    <td>{{ transaction.amount }}</td>
+                    <td>{{ '수입' if transaction.transaction_type == 'income' else '지출' }}</td>
+                    <td>
+                        <a href="{{ url_for('edit', id=transaction.id) }}">수정</a> | 
+                        <a href="{{ url_for('delete', id=transaction.id) }}" onclick="return confirm('삭제하시겠습니까?');">삭제</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
-<main>
-    <h2>카테고리 관리</h2>
-    <div class="category-box">
-        <div class="category-item">
-            <a href="/life">생활 관리</a>
-            <p>생활비를 관리하고 추가/수정/삭제 할 수 있습니다.</p>
-        </div>
-        <div class="category-item">
-            <a href="/event">이벤트 관리</a>
-            <p>이벤트 관련 데이터를 관리하고 추가/수정/삭제 할 수 있습니다.</p>
-        </div>
-        <div class="category-item">
-            <a href="/goal">목표 관리</a>
-            <p>목표를 관리하고 추가/수정/삭제 할 수 있습니다.</p>
-        </div>
-        <div class="category-item">
-            <a href="/save">저축 관리</a>
-            <p>저축 항목을 관리하고 추가/수정/삭제 할 수 있습니다.</p>
-        </div>
+        <a href="{{ url_for('add') }}">새 거래 추가</a>
     </div>
-</main>
-
-<footer>© 2025 재정 관리 시스템</footer>
-
 </body>
 </html>

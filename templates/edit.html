@@ -3,23 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>항목 수정</title>
+    <title>수정 - 수입/지출 내역</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+    <div class="container">
+        <h1>수입/지출 내역 수정</h1>
 
-<h2>항목 수정</h2>
-<form method="POST">
-    <label for="description">내용:</label>
-    <input type="text" id="description" name="description" value="{{ transaction['description'] }}" required><br>
-    
-    <label for="amount">금액:</label>
-    <input type="number" id="amount" name="amount" value="{{ transaction['amount'] }}" required><br>
-    
-    <label for="date">날짜:</label>
-    <input type="date" id="date" name="date" value="{{ transaction['date'] }}" required><br>
-    
-    <button type="submit">수정 완료</button>
-</form>
+        <form method="POST">
+            <label for="category">카테고리</label>
+            <input type="text" id="category" name="category" value="{{ transaction.category }}" required>
 
+            <label for="description">내용</label>
+            <input type="text" id="description" name="description" value="{{ transaction.description }}" required>
+
+            <label for="amount">금액</label>
+            <input type="number" id="amount" name="amount" value="{{ transaction.amount }}" required min="1">
+
+            <label for="date">날짜</label>
+            <input type="date" id="date" name="date" value="{{ transaction.date }}" required>
+
+            <label for="transaction_type">수입/지출</label>
+            <select id="transaction_type" name="transaction_type" required>
+                <option value="income" {% if transaction.transaction_type == 'income' %}selected{% endif %}>수입</option>
+                <option value="expense" {% if transaction.transaction_type == 'expense' %}selected{% endif %}>지출</option>
+            </select>
+
+            <button type="submit">내역 수정</button>
+        </form>
+    </div>
 </body>
 </html>

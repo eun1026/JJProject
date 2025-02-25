@@ -3,95 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>홈 화면 | 재정 관리 시스템</title>
+    <title>홈 페이지</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
 <header>
-    <h1>재정 관리 시스템</h1>
+    생활 관리 시스템
 </header>
 
 <nav>
-    <ul>
-        <li><a href="/">홈</a></li>
-        <li><a href="/life">생활 관리</a></li>
-        <li><a href="/event">이벤트 관리</a></li>
-        <li><a href="/goal">목표 관리</a></li>
-        <li><a href="/save">저축 관리</a></li>
-    </ul>
+    <a href="/">홈</a>
+    <a href="/life">생활 관리</a>
+    <a href="/event">이벤트 관리</a>
+    <a href="/goal">목표 관리</a>
+    <a href="/save">저축 관리</a>
 </nav>
 
 <main>
-    <div class="intro-box">
-        <h3>환영합니다!</h3>
-        <p>여기는 재정 관리 시스템의 홈 페이지입니다. 아래에서 각 카테고리의 최신 항목들을 확인하고 관련 페이지로 이동할 수 있습니다.</p>
+    <h2>카테고리별 항목</h2>
+
+    <!-- 카테고리별 항목을 가로로 배치할 컨테이너 -->
+    <div class="category-container">
+        <!-- 생활 관리 박스 -->
+        <div class="category-box">
+            <h3>생활 관리</h3>
+            {% if life_transactions %}
+                <ul>
+                    {% for transaction in life_transactions %}
+                        <li>{{ transaction['description'] }} - {{ transaction['amount'] }} 원</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>최근 추가된 항목이 없습니다.</p>
+            {% endif %}
+        </div>
+
+        <!-- 이벤트 관리 박스 -->
+        <div class="category-box">
+            <h3>이벤트 관리</h3>
+            {% if event_transactions %}
+                <ul>
+                    {% for transaction in event_transactions %}
+                        <li>{{ transaction['description'] }} - {{ transaction['amount'] }} 원</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>최근 추가된 항목이 없습니다.</p>
+            {% endif %}
+        </div>
+
+        <!-- 목표 관리 박스 -->
+        <div class="category-box">
+            <h3>목표 관리</h3>
+            {% if goal_transactions %}
+                <ul>
+                    {% for goal in goal_transactions %}
+                        <li>{{ goal['description'] }}: 목표 금액 {{ goal['target_amount'] }} 원, 현재 {{ goal['current_amount'] }} 원</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>최근 추가된 목표가 없습니다.</p>
+            {% endif %}
+        </div>
+
+        <!-- 저축 관리 박스 -->
+        <div class="category-box">
+            <h3>저축 관리</h3>
+            {% if save_transactions %}
+                <ul>
+                    {% for transaction in save_transactions %}
+                        <li>{{ transaction['description'] }} - {{ transaction['amount'] }} 원</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>최근 추가된 항목이 없습니다.</p>
+            {% endif %}
+        </div>
     </div>
 
-    <div class="category-overview">
-        <div class="category-item">
-            <h4><a href="/life">생활 관리</a></h4>
-            <ul>
-                {% for transaction in life_transactions %}
-                    <li>
-                        <strong>{{ transaction['description'] }}</strong><br>
-                        금액: {{ transaction['amount'] }} 원<br>
-                        날짜: {{ transaction['date'] }}
-                    </li>
-                {% else %}
-                    <li>최근 추가된 항목이 없습니다.</li>
-                {% endfor %}
-            </ul>
-        </div>
-        
-        <div class="category-item">
-            <h4><a href="/event">이벤트 관리</a></h4>
-            <ul>
-                {% for transaction in event_transactions %}
-                    <li>
-                        <strong>{{ transaction['description'] }}</strong><br>
-                        금액: {{ transaction['amount'] }} 원<br>
-                        날짜: {{ transaction['date'] }}
-                    </li>
-                {% else %}
-                    <li>최근 추가된 항목이 없습니다.</li>
-                {% endfor %}
-            </ul>
-        </div>
-        
-        <div class="category-item">
-            <h4><a href="/goal">목표 관리</a></h4>
-            <ul>
-                {% for transaction in goal_transactions %}
-                    <li>
-                        <strong>{{ transaction['description'] }}</strong><br>
-                        금액: {{ transaction['amount'] }} 원<br>
-                        날짜: {{ transaction['date'] }}
-                    </li>
-                {% else %}
-                    <li>최근 추가된 항목이 없습니다.</li>
-                {% endfor %}
-            </ul>
-        </div>
-        
-        <div class="category-item">
-            <h4><a href="/save">저축 관리</a></h4>
-            <ul>
-                {% for transaction in save_transactions %}
-                    <li>
-                        <strong>{{ transaction['description'] }}</strong><br>
-                        금액: {{ transaction['amount'] }} 원<br>
-                        날짜: {{ transaction['date'] }}
-                    </li>
-                {% else %}
-                    <li>최근 추가된 항목이 없습니다.</li>
-                {% endfor %}
-            </ul>
-        </div>
-    </div>
 </main>
 
-<footer>© 2025 재정 관리 시스템</footer>
+<footer>
+    © 2025 재정 관리 시스템
+</footer>
 
 </body>
 </html>

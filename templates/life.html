@@ -3,27 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>생활 관리 | 재정 관리 시스템</title>
+    <title>생활 관리</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
 <header>
     생활 관리
-    <div class="header-buttons">
-        <button onclick="location.href='/add/life'" class="button">새로운 생활 항목 추가</button>
-    </div>
 </header>
 
 <nav>
     <a href="/">홈</a>
+    <a href="/life">생활 관리</a>
     <a href="/event">이벤트 관리</a>
     <a href="/goal">목표 관리</a>
     <a href="/save">저축 관리</a>
 </nav>
 
 <main>
-    <h2>생활 항목</h2>
+    <h2>생활 관리 항목</h2>
+    <a href="/add/life" class="button">새로운 항목</a>
     <table>
         <thead>
             <tr>
@@ -48,7 +47,9 @@
     </table>
 </main>
 
-<footer>© 2025 재정 관리 시스템</footer>
+<footer>
+    © 2025 재정 관리 시스템
+</footer>
 
 </body>
 </html>
